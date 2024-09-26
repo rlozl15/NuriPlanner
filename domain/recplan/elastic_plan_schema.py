@@ -1,6 +1,4 @@
-from pydantic import BaseModel, ConfigDict, field_validator
-from typing import Optional
-from datetime import datetime
+from pydantic import BaseModel
 
 class RecPlan(BaseModel):
     id : int
