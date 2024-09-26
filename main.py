@@ -3,6 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from domain.plan import plan_router
 from domain.recplan import elastic_plan_router
+from domain.user import user_router
 
 app = FastAPI()
 
@@ -21,3 +22,4 @@ app.add_middleware(
 
 app.include_router(plan_router.router)
 app.include_router(elastic_plan_router.router)
+app.include_router(user_router.router)
