@@ -1,7 +1,7 @@
 <script>
   import fastapi from "../lib/api"
   import { link } from 'svelte-spa-router'
-  import { page } from "../lib/store"
+  import { page, is_login, nickname } from "../lib/store"
   import moment from 'moment/min/moment-with-locales'
   moment.locale('ko') // 한국식 날짜 형식
 
@@ -30,7 +30,9 @@
 
   <h1>교육활동계획안</h1>
   <div class="d-grid mb-2 gap-2 d-md-flex justify-content-md-end">
-    <!-- <a use:link href="/plan-create" class="btn btn-outline-primary">새 계획안 등록</a> -->
+    {#if $is_login && $nickname === "admin"}
+      <a use:link href="/plan-create" class="btn btn-outline-primary">새 계획안 등록</a>
+    {/if}
   </div>
   
   <table class="table table-striped">
