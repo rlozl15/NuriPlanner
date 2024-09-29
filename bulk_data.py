@@ -1,6 +1,6 @@
 from database_elasticsearch import client
 from database import SessionLocal
-from models import Plan
+from models import Plan, User
 
 from elasticsearch.helpers import bulk
 
@@ -16,6 +16,14 @@ def insert_data(df):
     df = df.to_dict('index')
     total = len(df)
     with SessionLocal() as db:
+        # user
+        u = User(username="admin@admin.com",
+                 password="admin",
+                 nickname="admin",
+                 is_active=True)
+        db.add(u)
+        db.commit()
+        # plans
         for i in range(total):
             p = Plan(**df[i])
             db.add(p)
@@ -61,7 +69,7 @@ def preprocessing():
     df.rename(columns = {"datetime_": "create_date"}, inplace = True)
     df.content_vector = df.content_vector.apply(json.loads)
     df.goal_vector = df.goal_vector.apply(json.loads)
-    df.datetime_ = df.datetime_.apply(lambda x: datetime(*list(map(int,x.split()))))
+    df.create_date = df.create_date.apply(lambda x: datetime(*list(map(int,x.split()))))
     return df
 
 ##### MAIN SCRIPT #####
