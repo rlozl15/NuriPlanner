@@ -22,6 +22,11 @@ def plan_detail(plan_id: int, db: Session = Depends(get_db)):
     plan = plan_crud.get_plan(db, plan_id)
     return plan
 
+@router.get("/max-id", response_model=int)
+def plan_max_id(db: Session = Depends(get_db)):
+    max_id = plan_crud.get_plan_id(db)
+    return max_id
+
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def plan_create(_plan_create: plan_schema.PlanCreate,
                   db: Session = Depends(get_db)):

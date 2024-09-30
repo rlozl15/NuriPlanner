@@ -1,7 +1,7 @@
 <script>
-    import { push } from 'svelte-spa-router'
-    import fastapi from "../lib/api"
-    import Error from "../components/Error.svelte"
+    import { push } from 'svelte-spa-router';
+    import fastapi from '../lib/api';
+    import Error from '../components/Error.svelte';
     
     let error = {detail:[]}
     let title = ""
@@ -11,10 +11,12 @@
     let topic = ""
     let activity = ""
 
-    function post_plan(event) {
+    async function post_plan(event) {
         event.preventDefault()
-        let url = "/api/plan/create"
-        let params = {
+
+        // mysql에 저장
+        const url = "/api/plan/create"
+        const params = {
           title: title,
           content: content,
           goal: goal,
@@ -22,14 +24,31 @@
           topic: topic,
           activity: activity,
         }
-        fastapi('post', url, params, 
-            (json) => {
-                push("/")
-            },
-            (json_error) => {
-                error = json_error
-            }
+        await fastapi('post', url, params)
+
+      // id 가져오기
+      const url_ = "/api/plan/max-id"
+      const maxId = await fastapi("get", url_, {})
+      console.log(maxId)
+      
+      // elasticsearch에 저장
+      let url_e = "/api/recplan/create"
+      let params_ = {
+        id: maxId,
+        title: title,
+        content: content,
+        goal: goal,
+        activity: activity,
+      }
+      await fastapi("post", url_e, params_,
+        (json) => {
+          push("/")
+        },
+        (json_error) => {
+          error = json_error
+        }
       )
+
     }
 </script>
 
