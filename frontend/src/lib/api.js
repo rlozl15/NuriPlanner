@@ -1,4 +1,7 @@
-import qs from "qs"     // frontend % npm install qs
+import qs from "qs";     // frontend % npm install qs
+import { access_token, username, nickname, is_login } from "./store";
+import { get } from "svelte/store";
+import { push } from "svelte-spa-router";
 
 async function fastapi(operation, url, params, success_callback, failure_callback) {
     let method = operation;
@@ -23,6 +26,11 @@ async function fastapi(operation, url, params, success_callback, failure_callbac
         }
     };
 
+    const _access_token = get(access_token)
+    if (_access_token) {
+        options.headers["Authorization"] = "Bearer " + _access_token;
+    }
+
     if (method !== 'get') {
         options['body'] = body;
     }
@@ -43,8 +51,19 @@ async function fastapi(operation, url, params, success_callback, failure_callbac
             const data = await response.json();
             if (success_callback) {
                 success_callback(data);
-            }
+            } 
             return data;
+        }
+        
+        // token time out
+        if (operation !== 'login' && response.status == 401) { 
+            access_token.set('');
+            username.set('');
+            nickname.set('');
+            is_login.set(false);
+            alert("로그인이 필요합니다.");
+            push('/user-login');
+            return;
         }
 
         // 실패 응답 처리

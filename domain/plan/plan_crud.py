@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from models import Plan
+from models import Plan, User
 from domain.plan.plan_schema import PlanCreate
 
 from datetime import datetime
@@ -23,7 +23,7 @@ def get_plan_id(db: Session):
         ).scalars().first()
     return id
 
-def create_plan(db: Session, plan_create: PlanCreate):
+def create_plan(db: Session, plan_create: PlanCreate, user: User):
     db_plan = Plan(title = plan_create.title,
                    content = plan_create.content,
                    goal = plan_create.goal,
@@ -31,6 +31,6 @@ def create_plan(db: Session, plan_create: PlanCreate):
                    topic = plan_create.topic,
                    activity = plan_create.activity,
                    create_date = datetime.now(),
-                   owner_id = 1)
+                   owner = user)
     db.add(db_plan)
     db.commit()

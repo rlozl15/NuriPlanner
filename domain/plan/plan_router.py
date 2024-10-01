@@ -4,6 +4,8 @@ from starlette import status
 
 from database import get_db
 from domain.plan import plan_schema, plan_crud
+from domain.user.user_router import get_current_user
+from models import User
 
 router = APIRouter(
     prefix="/api/plan",
@@ -29,8 +31,11 @@ def plan_max_id(db: Session = Depends(get_db)):
 
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def plan_create(_plan_create: plan_schema.PlanCreate,
-                  db: Session = Depends(get_db)):
-    plan_crud.create_plan(db, plan_create=_plan_create)
+                db: Session = Depends(get_db),
+                current_user: User = Depends(get_current_user)):
+    plan_crud.create_plan(db, 
+                          plan_create=_plan_create, 
+                          user=current_user)
 
 
 
