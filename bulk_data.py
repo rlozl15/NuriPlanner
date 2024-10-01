@@ -1,6 +1,7 @@
 from database_elasticsearch import client
 from database import SessionLocal
 from models import Plan, User
+from sqlalchemy import text
 
 from elasticsearch.helpers import bulk
 
@@ -8,31 +9,42 @@ import pandas as pd
 import json
 from datetime import datetime
 
+from passlib.context import CryptContext
+
+# 비밀번호 암호화
+pwd_context = CryptContext(schemes= ["bcrypt"], deprecated= "auto")
+
 ##### MYSQL #####
 
 def insert_data(df):
     df = df[['id', 'title', 'content', 'goal', 'nuri', 'topic', 'activity', 'create_date']]
-    df['owner_id'] = 1
     df = df.to_dict('index')
     total = len(df)
     with SessionLocal() as db:
+        # 초기화
+        db.execute(text('SET FOREIGN_KEY_CHECKS=0;'))
+        db.execute(text('TRUNCATE TABLE PLANS;'))
+        db.execute(text('TRUNCATE TABLE USERS;'))
+        db.execute(text('SET FOREIGN_KEY_CHECKS=1;'))
+        db.execute(text('ALTER TABLE PLANS AUTO_INCREMENT = 1;'))
+        db.execute(text('ALTER TABLE PLANS AUTO_INCREMENT = 1;'))
         # user
         u = User(username="admin@admin.com",
-                 password="admin",
+                 password=pwd_context.hash("admin"),
                  nickname="admin",
                  is_active=True)
         db.add(u)
         db.commit()
         # plans
         for i in range(total):
-            p = Plan(**df[i])
+            p = Plan(**df[i], owner = u)
             db.add(p)
         db.commit()
 
 ##### ELASTICSEARCH #####
 
 def index_data(df):
-    # bulk 할 인덱스 생성
+    # bulk 할 인덱스 초기화
     client.indices.delete(index=INDEX_NAME, ignore=[404])
     with open(INDEX_FILE) as index_file:
         source = index_file.read().strip() #index field 구성 정보
