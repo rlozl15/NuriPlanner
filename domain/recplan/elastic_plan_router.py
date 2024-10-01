@@ -14,5 +14,13 @@ def recplan_list(plan_id: int):
     return {"rec_plan_list":recplan_list}
 
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
-def plan_create(_plan_create: elastic_plan_schema.RecPlanCreate):
-    elastic_plan_crud.create_recplan(_plan_create)
+def recplan_create(_recplan_create: elastic_plan_schema.RecPlanCreate):
+    elastic_plan_crud.create_recplan(_recplan_create)
+
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+def recplan_update(_recplan_update: elastic_plan_schema.RecPlanUpdate):
+    elastic_plan_crud.update_recplan(_recplan_update)
+
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+def recplan_delete(_recplan_delete: elastic_plan_schema.RecPlanDelete):
+    elastic_plan_crud.delete_recplan(_recplan_delete.plan_id)

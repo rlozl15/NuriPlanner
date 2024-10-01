@@ -28,8 +28,8 @@
 
 <div class="container my-3">
 
-  <h1>교육활동계획안</h1>
-  <div class="d-grid mb-2 gap-2 d-md-flex justify-content-md-end">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1>교육활동계획안</h1>
     {#if $is_login && $nickname === "admin"}
       <a use:link href="/plan-create" class="btn btn-outline-primary">새 계획안 등록</a>
     {/if}

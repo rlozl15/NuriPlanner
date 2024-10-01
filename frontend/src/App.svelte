@@ -6,6 +6,7 @@
   import PlanCreate from "./routes/PlanCreate.svelte"
   import UserCreate from './routes/UserCreate.svelte'
   import UserLogin from './routes/UserLogin.svelte'
+  import PlanModify from './routes/PlanModify.svelte'
 
   const routes = {
     '/': Home,
@@ -13,6 +14,7 @@
     '/plan-create' : PlanCreate,
     '/user-create' : UserCreate,  
     '/user-login' : UserLogin,  
+    '/plan-modify/:plan_id': PlanModify,
   }
 </script>
 

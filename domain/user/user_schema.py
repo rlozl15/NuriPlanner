@@ -1,13 +1,18 @@
-from pydantic import BaseModel, field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
 from pydantic_core.core_schema import FieldValidationInfo
 
 
 class UserBase(BaseModel):
     username : EmailStr   # pip install "pydantic[email]"
-    password : str
     nickname : str
 
+class User(UserBase):
+    id : int
+
+    model_config = ConfigDict(from_attributes=True)
+
 class UserCreate(UserBase):
+    password : str
     password_check : str
 
     @field_validator('username', 'password', 'password_check', 'nickname')
