@@ -2,6 +2,8 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional
 from datetime import datetime
 
+from domain.user.user_schema import User
+
 class PlanBase(BaseModel):
     title : str
     content : str
@@ -9,7 +11,6 @@ class PlanBase(BaseModel):
     nuri : str
     topic : str
     activity : str
-
 
 class PlanCreate(PlanBase):
     
@@ -19,16 +20,21 @@ class PlanCreate(PlanBase):
             raise ValueError('빈 값은 허용되지 않습니다.')
         return v
 
-
 class Plan(PlanBase):
     id : int
-    owner_id  : int
+    owner : User
     create_date : datetime
+    modify_date : Optional[datetime]
 
     model_config = ConfigDict(from_attributes=True)
-
 
 class PlanList(BaseModel):
     total: int = 0
     plan_list: list[Plan] = []
 
+class PlanUpdate(PlanBase):
+    plan_id : int
+    modify_date : Optional[datetime]
+
+class PlanDelete(BaseModel):
+    plan_id : int

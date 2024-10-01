@@ -1,4 +1,4 @@
-from domain.recplan.elastic_plan_schema import RecPlanCreate
+from domain.recplan.elastic_plan_schema import RecPlanCreate, RecPlanUpdate
 from database_elasticsearch import client
 
 import sys, os
@@ -6,34 +6,68 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from KoSimCSE.data.dataloader import convert_to_tensor, example_model_setting
 
 
-vector_type = "content_vector"
+vector_type = "goal_vector"
 index_name = "plans"
 
 def get_recplan_list(plan_id: int):
     recplan_list = search_query(plan_id, vector_type)
     return recplan_list
 
+def get_recplan(plan_id: int):
+    resp = client.get(
+        index=index_name,
+        id = plan_id,
+    )
+    return resp['_source']
+
 def create_recplan(plan_create: RecPlanCreate):
     content_vector = str2vec(plan_create.content)
     goal_vector = str2vec(plan_create.goal)
 
-    plan = {"title" : plan_create.title,
-            "content" : plan_create.content,
-            "goal" : plan_create.goal,
-            "activity" : plan_create.activity,
-            "content_vector": content_vector,
-            "goal_vector" : goal_vector,
-            }
+    plan = {
+        "title" : plan_create.title,
+        "content" : plan_create.content,
+        "goal" : plan_create.goal,
+        "activity" : plan_create.activity,
+        "content_vector": content_vector,
+        "goal_vector" : goal_vector,
+        }
     
-    add_doc(plan_create.id, plan)
-
-
-def add_doc(plan_id: int, plan_doc: dict):
-    client.index(
+    resp = client.index(
         index = index_name,
-        id = plan_id,
-        document= plan_doc,
+        id = plan_create.id,
+        document= plan,
     )
+
+    # 성공 여부 확인 successful: 1이상 or failed: 0
+    # resp["_shards"]["successful"]
+
+def update_recplan(plan_update: RecPlanUpdate):
+    content_vector = str2vec(plan_update.content)
+    goal_vector = str2vec(plan_update.goal)
+
+    plan = {
+        "title" : plan_update.title,
+        "content" : plan_update.content,
+        "goal" : plan_update.goal,
+        "activity" : plan_update.activity,
+        "content_vector": content_vector,
+        "goal_vector" : goal_vector,
+        }
+    
+    resp = client.update(
+        index=index_name,
+        id=plan_update.id,
+        doc=plan,
+        detect_noop=False,
+    )
+
+def delete_recplan(plan_id: int):
+    resp = client.delete(
+        index=index_name,
+        id=plan_id,
+    )
+
 
 def search_query(plan_id: int, vector_type: str, search_size: int = 4):
     ref_data = client.get(index=index_name, id=plan_id)
@@ -68,3 +102,4 @@ def str2vec(x: str):
     vec = model.encode(convert_to_tensor([x], transform), device)
     vec = vec.cpu().detach().numpy().tolist()
     return vec
+    

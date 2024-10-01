@@ -8,7 +8,7 @@ class User(Base):
     username = mapped_column(String(255), unique=True, nullable=False)
     password = mapped_column(String(255), nullable=False)    
     nickname = mapped_column(String(255), unique=True, nullable=False)
-    plans = relationship("Plan", back_populates="owner", cascade='all')
+    plans = relationship("Plan", back_populates="owner", cascade='delete')
     is_active = mapped_column(Boolean,default=True)
 
 
@@ -22,5 +22,6 @@ class Plan(Base):
     topic = mapped_column(String(100))
     activity = mapped_column(String(100))
     create_date = mapped_column(DateTime, nullable=False)
+    modify_date = mapped_column(DateTime, nullable=True)
     owner_id = mapped_column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="plans")

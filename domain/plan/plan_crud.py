@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from models import Plan, User
-from domain.plan.plan_schema import PlanCreate
+from domain.plan.plan_schema import PlanCreate, PlanUpdate
 
 from datetime import datetime
 
@@ -17,7 +17,7 @@ def get_plan(db: Session, plan_id: int):
     plan = db.query(Plan).get(plan_id)
     return plan
 
-def get_plan_id(db: Session):
+def get_max_plan_id(db: Session):
     id = db.execute(
         select(func.max(Plan.id)).select_from(Plan).limit(1)
         ).scalars().first()
@@ -33,4 +33,23 @@ def create_plan(db: Session, plan_create: PlanCreate, user: User):
                    create_date = datetime.now(),
                    owner = user)
     db.add(db_plan)
+    db.commit()
+
+def update_plan(db: Session, db_plan: Plan,
+                plan_update: PlanUpdate):
+    db_plan.title = plan_update.title
+    db_plan.content = plan_update.content
+    db_plan.goal = plan_update.goal
+    db_plan.nuri = plan_update.nuri
+    db_plan.topic = plan_update.topic
+    db_plan.activity = plan_update.activity
+    if plan_update.modify_date:
+        db_plan.modify_date = plan_update.modify_date
+    else:
+        db_plan.modify_date = datetime.now()
+    db.add(db_plan)
+    db.commit()
+
+def delete_plan(db: Session, db_plan: Plan):
+    db.delete(db_plan)
     db.commit()
