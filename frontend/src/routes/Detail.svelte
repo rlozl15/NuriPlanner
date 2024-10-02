@@ -92,7 +92,7 @@
             <div class="card-body text-dark" >
                 <p class="card-text"><small class="text-muted">{@html recplan.activity}</small></p>
                 <p class="card-text text-truncate" 
-                style="max-height: 50px; white-space: pre-line;">{@html recplan.content}</p>
+                style="max-height: 95px; white-space: pre-line;">{@html recplan.content}</p>
             </div>
         </div>
         {/each}       
