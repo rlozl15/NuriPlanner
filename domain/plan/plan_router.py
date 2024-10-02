@@ -14,8 +14,10 @@ router = APIRouter(
 
 @router.get("/list", response_model=plan_schema.PlanList)
 def plan_list(db: Session = Depends(get_db),
-              page: int = 0, size: int = 10):
-    total, _plan_list = plan_crud.get_plan_list(db, page*size, size)
+              page: int = 0, size: int = 10,
+              keyword: str = None):
+    total, _plan_list = plan_crud.get_plan_list(
+        db, page*size, size, keyword=keyword)
     return {'total': total,
             'plan_list': _plan_list}
 

@@ -1,16 +1,32 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 from models import Plan, User
 from domain.plan.plan_schema import PlanCreate, PlanUpdate
 
 from datetime import datetime
 
 
-def get_plan_list(db: Session, skip: int = 0, limit: int = 10):
-    _plan_list = db.query(Plan)\
-        .order_by(Plan.create_date.desc())
-    total = _plan_list.count()
-    plan_list = _plan_list.offset(skip).limit(limit).all()
+def get_plan_list(db: Session, skip: int = 0, limit: int = 10,
+                  keyword: str = None):
+    stmt = select(Plan)
+
+    if keyword:
+        keyword = f"%{keyword}%"
+        stmt = (stmt
+                # .outerjoin(User, Plan.owner_id == User.id)
+                .filter(
+                    Plan.title.ilike(keyword) |
+                    Plan.content.ilike(keyword) |
+                    Plan.topic.ilike(keyword)
+                ))
+        
+    total = db.execute(select(func.count())
+                       .select_from(stmt.distinct())).scalar()
+
+    plan_list = db.execute(stmt.order_by(Plan.create_date.desc())
+                           .offset(skip)
+                           .limit(limit)).scalars().all()
+    
     return total, plan_list
 
 def get_plan(db: Session, plan_id: int):
