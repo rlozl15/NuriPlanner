@@ -13,7 +13,7 @@
 |추천목록조회|get|/api/recplan/{plan_id}/list|계획안(plan_id)에 대한 추전 목록을 조회한다|
 |계획안등록|post|/api/plan/create|새로운 계획안을 등록한다|
 |회원가입|post|/api/user/create|새로운 회원을 등록한다|
-|로그인|/api/user/login|post|로그인을 실행한다|
+|로그인|post|/api/user/login|로그인을 실행한다|
 |계획안수정|put|/api/plan/update|계획안을 수정한다|
 |계획안삭제|delete|/api/plan/delete|계획안을 삭제한다|
 
