@@ -1,7 +1,7 @@
 from database_elasticsearch import client
 from database import SessionLocal
 from models import Plan, User
-from sqlalchemy import text
+from sqlalchemy import text, select
 
 from elasticsearch.helpers import bulk
 
@@ -35,9 +35,12 @@ def insert_data(df):
                  is_active=True)
         db.add(u)
         db.commit()
+        _user = db.execute(select(User).filter_by(
+            username = "admin@admin.com"
+        ).limit(1)).scalars().first()
         # plans
         for i in range(total):
-            p = Plan(**df[i], owner = u)
+            p = Plan(**df[i], owner = _user)
             db.add(p)
         db.commit()
 
