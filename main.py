@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 
 from domain.plan import plan_router
 from domain.recplan import elastic_plan_router
@@ -9,7 +11,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    # "http://127.0.0.1:5173",
+    "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
@@ -23,3 +25,8 @@ app.add_middleware(
 app.include_router(plan_router.router)
 app.include_router(elastic_plan_router.router)
 app.include_router(user_router.router)
+app.mount("/assets", StaticFiles(directory="frontend/dist/assets"))
+
+@app.get("/")
+def index():
+    return FileResponse("frontend/dist/index.html")
