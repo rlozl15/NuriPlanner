@@ -18,13 +18,13 @@
 |계획안삭제|delete|/api/plan/delete|계획안을 삭제한다|
 
 # 서버 실행
-* FastAPI 서버 실행
+* FastAPI 서버 실행   
 uvicorn main:app --reload
 
-* elasticsearch 서버 실행
-cd C:\Users\Angie\elasticsearch-8.15.0
+* elasticsearch 서버 실행   
+cd C:\Users\Angie\elasticsearch-8.15.0   
 .\bin\elasticsearch.bat
 
-* Svelte 서버 실행
-cd frontend
+* Svelte 서버 실행   
+cd frontend   
 npm run dev
