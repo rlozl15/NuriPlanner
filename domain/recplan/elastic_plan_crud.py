@@ -10,7 +10,7 @@ vector_type = "goal_vector"
 index_name = "plans"
 
 def get_recplan_list(plan_id: int):
-    recplan_list = search_query(plan_id, vector_type)
+    recplan_list = search_query(plan_id, vector_type, search_size=4)
     return recplan_list
 
 def get_recplan(plan_id: int):
@@ -102,4 +102,3 @@ def str2vec(x: str):
     vec = model.encode(convert_to_tensor([x], transform), device)
     vec = vec.cpu().detach().numpy().tolist()
     return vec
-    
