@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, delete, update, func, and_
 from models import Plan, User
 from domain.plan.plan_schema import PlanCreate, PlanUpdate
 
@@ -13,30 +13,29 @@ def get_plan_list(db: Session, skip: int = 0, limit: int = 10,
     if keyword:
         keyword = f"%{keyword}%"
         stmt = (stmt
-                # .outerjoin(User, Plan.owner_id == User.id)
                 .filter(
                     Plan.title.ilike(keyword) |
                     Plan.content.ilike(keyword) |
                     Plan.topic.ilike(keyword)
                 ))
-        
-    total = db.execute(select(func.count())
-                       .select_from(stmt.distinct())).scalar()
+    
+    total_stmt = select(func.count()).select_from(stmt.distinct())
+    total = db.execute(total_stmt).scalar()
 
-    plan_list = db.execute(stmt.order_by(Plan.create_date.desc())
-                           .offset(skip)
-                           .limit(limit)).scalars().all()
+    plan_stmt = (stmt.order_by(Plan.create_date.desc())
+                 .offset(skip).limit(limit))
+    plan_list = db.execute(plan_stmt).scalars().all()
     
     return total, plan_list
 
 def get_plan(db: Session, plan_id: int):
-    plan = db.query(Plan).get(plan_id)
+    stmt = select(Plan).where(Plan.id == plan_id)
+    plan = db.execute(stmt).scalars().first()
     return plan
 
 def get_max_plan_id(db: Session):
-    id = db.execute(
-        select(func.max(Plan.id)).select_from(Plan).limit(1)
-        ).scalars().first()
+    stmt = select(func.max(Plan.id)).select_from(Plan).limit(1)
+    id = db.execute(stmt).scalars().first()
     return id
 
 def create_plan(db: Session, plan_create: PlanCreate, user: User):
@@ -53,19 +52,23 @@ def create_plan(db: Session, plan_create: PlanCreate, user: User):
 
 def update_plan(db: Session, db_plan: Plan,
                 plan_update: PlanUpdate):
-    db_plan.title = plan_update.title
-    db_plan.content = plan_update.content
-    db_plan.goal = plan_update.goal
-    db_plan.nuri = plan_update.nuri
-    db_plan.topic = plan_update.topic
-    db_plan.activity = plan_update.activity
-    if plan_update.modify_date:
-        db_plan.modify_date = plan_update.modify_date
-    else:
-        db_plan.modify_date = datetime.now()
-    db.add(db_plan)
+    stmt = (
+            update(Plan)
+            .where(Plan.id == db_plan.id)
+            .values(
+                title = plan_update.title,
+                content = plan_update.content,
+                goal = plan_update.goal,
+                nuri = plan_update.nuri,
+                topic = plan_update.topic,
+                activity = plan_update.activity,
+                modify_date = datetime.now(),
+            )
+        )
+    db.execute(stmt)
     db.commit()
 
 def delete_plan(db: Session, db_plan: Plan):
-    db.delete(db_plan)
+    stmt = delete(Plan).where(Plan.id == db_plan.id)
+    db.execute(stmt)
     db.commit()

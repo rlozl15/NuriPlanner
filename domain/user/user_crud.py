@@ -16,12 +16,12 @@ def create_user(db: Session, user_create: UserCreate):
 
 def get_user(db: Session, user_name: str = None, nickname: str = None):
     if user_name:
-        user = db.execute(select(User).filter_by(
-            username = user_name
+        user = db.execute(select(User).where(
+            User.username == user_name
         ).limit(1)).scalars().first()
     elif nickname:
-        user = db.execute(select(User).filter_by(
-            nickname = nickname
+        user = db.execute(select(User).where(
+            User.nickname == nickname
         ).limit(1)).scalars().first()
     else:
         return None
