@@ -24,7 +24,7 @@ class Plan(PlanBase):
     id : int
     owner : User
     create_date : datetime
-    modify_date : Optional[datetime]
+    modify_date : Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -34,7 +34,7 @@ class PlanList(BaseModel):
 
 class PlanUpdate(PlanBase):
     plan_id : int
-    modify_date : Optional[datetime]
+    modify_date : Optional[datetime] = None
 
 class PlanDelete(BaseModel):
     plan_id : int

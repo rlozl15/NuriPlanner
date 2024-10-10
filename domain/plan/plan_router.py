@@ -45,10 +45,10 @@ def plan_update(_plan_update: plan_schema.PlanUpdate,
                 current_user: User = Depends(get_current_user)):
     db_plan = plan_crud.get_plan(db, plan_id=_plan_update.plan_id)
     if db_plan is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="데이터를 찾을 수 없습니다.")
     if current_user.id != db_plan.owner.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="수정 권한이 없습니다.")
     plan_crud.update_plan(db, db_plan, _plan_update)
     
@@ -58,9 +58,9 @@ def plan_delete(_plan_delete: plan_schema.PlanDelete,
                 current_user: User = Depends(get_current_user)):
     db_plan = plan_crud.get_plan(db, plan_id=_plan_delete.plan_id)
     if not db_plan:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="데이터를 찾을수 없습니다.")
     if current_user.id != db_plan.owner.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="삭제 권한이 없습니다.")
     plan_crud.delete_plan(db, db_plan)
