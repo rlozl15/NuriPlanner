@@ -1,6 +1,11 @@
 <script>
     import { link } from 'svelte-spa-router'
-    import { page, keyword, access_token, username, is_login, nickname } from "../lib/store"
+    import { page, keyword, is_login, nickname, resetUserStore } from "../lib/store"
+
+    function handleLogout() {
+        resetUserStore(); // 사용자 정보 초기화
+    }
+
 </script>
 
 <!-- 네비게이션바 -->
@@ -21,19 +26,17 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {#if $is_login}
                     <li class="nav-item">
-                        <a use:link href="/user-login" class="nav-link" on:click={() => {
-                            $access_token = ''
-                            $username = ''
-                            $nickname = ''
-                            $is_login = false
-                        }}>로그아웃 ({$nickname})</a>
+                        <a use:link href="/user-login" class="nav-link" on:click={handleLogout}>
+                            로그아웃 ({$nickname})</a>
                     </li>
                 {:else}
                     <li class="nav-item">
-                        <a use:link class="nav-link" href="/user-create">회원가입</a>
+                        <a use:link class="nav-link" href="/user-create">
+                            회원가입</a>
                     </li>
                     <li class="nav-item">
-                        <a use:link class="nav-link" href="/user-login">로그인</a>
+                        <a use:link class="nav-link" href="/user-login">
+                            로그인</a>
                     </li>
                 {/if}
             </ul>
