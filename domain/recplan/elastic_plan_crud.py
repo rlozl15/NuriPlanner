@@ -2,7 +2,8 @@ from domain.recplan.elastic_plan_schema import RecPlanCreate, RecPlanUpdate
 from database_elasticsearch import client
 
 import sys, os
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, '..', '..', 'KoSimCSE'))
 from KoSimCSE.data.dataloader import convert_to_tensor, example_model_setting
 
 
@@ -97,8 +98,8 @@ def search_query(plan_id: int, vector_type: str, search_size: int = 4):
     return recplan_list
 
 def str2vec(x: str):
-    model_ckpt = './KoSimCSE-SKT/output/nli_checkpoint.pt'
+    model_ckpt = './KoSimCSE/output/nli_checkpoint.pt'
     model, transform, device = example_model_setting(model_ckpt)
     vec = model.encode(convert_to_tensor([x], transform), device)
-    vec = vec.cpu().detach().numpy().tolist()
+    vec = vec.cpu().detach().numpy().tolist()[0]
     return vec
