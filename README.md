@@ -98,7 +98,7 @@ CREATE DATABASE db_name;
 ```
 ### 사용자 계정 생성 및 권한 부여
 ``` mysql
-# 계정 생성 id: myacct, pw: 0000
+# 계정 생성 아이디 myacct, 비밀번호 0000
 CREATE USER 'myacct'@'%' IDENTIFIED WITH mysql_native_password BY '0000';
 
 # 권한 부여
@@ -109,7 +109,7 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 ### mysqld.conf 파일 설정
-- bind-address 주석처리
+- ```bind-address``` 주석처리
 ```
 cd /etc/mysql/mysql.conf.d
 vim mysqld.cnf
@@ -124,8 +124,16 @@ vim mysqld.cnf
 alembic init migrations
 ```
 - alembic.ini 파일 수정
-    - ```sqlalchemy.url = mysql+pymysql://{user}:{pw}@{host}:{port}/{db_name}```
-    - 예를 들어 ```mysql+pymysql://myacct:0000@0.0.0.0:3306/mydb```
+    - ```sqlalchemy.url``` 주석처리
+- config.py 의 DatabaseConfig를 알맞게 수정
+```python
+# 예시
+host = "127.0.0.1"
+port = 3306
+name = "mydb"
+user = "myacct"
+pw = "0000"
+```
 - migrations/env.py 파일의 target_metadata를 아래와 같이 수정
 ```python
 import models
