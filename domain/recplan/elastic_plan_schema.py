@@ -1,4 +1,5 @@
 from pydantic import BaseModel, field_validator
+from typing import List
 
 class RecPlanBase(BaseModel):
     id : int
@@ -16,7 +17,7 @@ class RecPlanCreate(RecPlanBase):
         return v
 
 class RecPlanList(BaseModel):
-    rec_plan_list: list[RecPlanBase] = []
+    rec_plan_list: List[RecPlanBase] = []
 
 class RecPlanUpdate(RecPlanBase):
     goal : str
