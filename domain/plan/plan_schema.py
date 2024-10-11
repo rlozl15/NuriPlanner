@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, field_validator
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from domain.user.user_schema import User
@@ -30,7 +30,7 @@ class Plan(PlanBase):
 
 class PlanList(BaseModel):
     total: int = 0
-    plan_list: list[Plan] = []
+    plan_list: List[Plan] = []
 
 class PlanUpdate(PlanBase):
     plan_id : int
