@@ -139,9 +139,9 @@ alembic init migrations
 ```
 - alembic.ini 파일 수정
     - ```sqlalchemy.url``` 주석처리
-- config.py 의 DatabaseConfig를 알맞게 수정
+- config.py를 알맞게 수정
 ```python
-# 예시
+# DatabaseConfig 예시
 host = "127.0.0.1"
 port = 3306
 name = "mydb"
